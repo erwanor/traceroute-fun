@@ -14,7 +14,7 @@ use std::io::prelude::*;
  */
 
 fn main() {
-    let localhost = Ipv4Addr::new(127,0,0,1);
+    let localhost = Ipv4Addr::new(0,0,0,0);
     let localhost_addr = SocketAddrV4::new(localhost, 1234);
     let mut socket = UdpSocket::bind(localhost_addr).expect("failed to bind udp socket");
     let addr: SocketAddrV4 = "139.178.84.217:1235".parse().unwrap();
