@@ -1,8 +1,10 @@
 use std::borrow::BorrowMut;
-use std::net::{IpAddr, Ipv4Addr};
+use std::net::{IpAddr, Ipv4Addr, TcpStream, UdpSocket, SocketAddrV4};
 
 use bytes::BytesMut;
 use icmp;
+
+use std::io::prelude::*;
 
 /*
  * 1. send TCP packets with custom  TTL
@@ -12,19 +14,11 @@ use icmp;
  */
 
 fn main() {
-    println!("Hello, world!");
-    let mut socket = icmp::IcmpSocket::connect(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)))
-        .expect("failed to open raw socket");
-
-    let mut b: [u8; 32] = [0; 32];
-
-    let mut buffer = BytesMut::with_capacity(1024);
-    loop {
-        socket.send(&mut b).expect("failed to send over socket!");
-
-        let bytes_read = socket
-            .recv(buffer.borrow_mut())
-            .expect("failed to read from socket!");
-        println!("{bytes_read}");
-    }
+    let localhost = Ipv4Addr::new(127,0,0,1);
+    let localhost_addr = SocketAddrV4::new(localhost, 1234);
+    let mut socket = UdpSocket::bind(localhost_addr).expect("failed to bind udp socket");
+    let addr: SocketAddrV4 = "139.178.84.217:1235".parse().unwrap();
+    socket.connect(addr).expect("failed to connect to address");
+    socket.set_ttl(3);
+    socket.send(&[1,2,3, 4, 5]);
 }
